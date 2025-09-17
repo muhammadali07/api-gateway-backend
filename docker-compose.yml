@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: api_gateway_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: api_gateway
+      MYSQL_USER: apiuser
+      MYSQL_PASSWORD: apipassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: api_gateway_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+
+  app:
+    build: .
+    container_name: api_gateway_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=apiuser
+      - DB_PASSWORD=apipassword
+      - DB_NAME=api_gateway
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - EXTERNAL_API_URL=https://jsonplaceholder.typicode.com
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:

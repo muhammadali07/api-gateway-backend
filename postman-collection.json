@@ -1,0 +1,370 @@
+{
+	"info": {
+		"_postman_id": "api-gateway-backend-collection",
+		"name": "API Gateway Backend",
+		"description": "Collection untuk testing API Gateway Backend - Backend Engineer Take-Home Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has status field', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('status');",
+							"    pm.expect(responseJson.status).to.eql('healthy');",
+							"});",
+							"",
+							"pm.test('Database and Redis are connected', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('database');",
+							"    pm.expect(responseJson).to.have.property('redis');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sync Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has message field', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('message');",
+							"});",
+							"",
+							"pm.test('Response time is less than 10 seconds', function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/sync",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sync"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has items array', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('items');",
+							"    pm.expect(responseJson.items).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Response has total count', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('total');",
+							"    pm.expect(responseJson.total).to.be.a('number');",
+							"});",
+							"",
+							"pm.test('Response indicates cache status', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('cached');",
+							"    pm.expect(responseJson.cached).to.be.a('boolean');",
+							"});",
+							"",
+							"pm.test('Items have required fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.items.length > 0) {",
+							"        const item = responseJson.items[0];",
+							"        pm.expect(item).to.have.property('id');",
+							"        pm.expect(item).to.have.property('external_id');",
+							"        pm.expect(item).to.have.property('title');",
+							"        pm.expect(item).to.have.property('body');",
+							"        pm.expect(item).to.have.property('user_id');",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/items",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Analytics - Order Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has data array', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('data');",
+							"    pm.expect(responseJson.data).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Data items have required fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.data.length > 0) {",
+							"        const item = responseJson.data[0];",
+							"        pm.expect(item).to.have.property('status');",
+							"        pm.expect(item).to.have.property('order_count');",
+							"        pm.expect(item).to.have.property('total_amount');",
+							"    }",
+							"});",
+							"",
+							"pm.test('Response has period info', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('period');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/analytics/orders/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"analytics",
+						"orders",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Analytics - Top Customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has data array', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('data');",
+							"    pm.expect(responseJson.data).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Data has maximum 5 customers', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson.data.length).to.be.at.most(5);",
+							"});",
+							"",
+							"pm.test('Customer data has required fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.data.length > 0) {",
+							"        const customer = responseJson.data[0];",
+							"        pm.expect(customer).to.have.property('customer_id');",
+							"        pm.expect(customer).to.have.property('total_spend');",
+							"        pm.expect(customer).to.have.property('order_count');",
+							"    }",
+							"});",
+							"",
+							"pm.test('Customers are sorted by total spend (descending)', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.data.length > 1) {",
+							"        for (let i = 0; i < responseJson.data.length - 1; i++) {",
+							"            pm.expect(responseJson.data[i].total_spend).to.be.at.least(responseJson.data[i + 1].total_spend);",
+							"        }",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/analytics/customers/top",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"analytics",
+						"customers",
+						"top"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Error Test - Invalid Endpoint",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 404', function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/invalid",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"invalid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Error Test - Invalid Method",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 405', function () {",
+							"    pm.response.to.have.status(405);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/items",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"items"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
