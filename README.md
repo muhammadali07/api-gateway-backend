@@ -336,7 +336,3 @@ These queries are implemented in the database layer and exposed via REST endpoin
 ## 📄 License
 
 This project is created for the Backend Engineer Take-Home Test.
-
----
-
-**Built with ❤️ using Go, MySQL, and Redis**
